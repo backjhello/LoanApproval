@@ -1,11 +1,22 @@
 import streamlit as st
-import pandas as pd
-from src.visualization import plot_distribution
+from src.loader import load_processed_data
+from src.viz import (
+    plot_distribution,
+    plot_spending_by_age,
+    plot_city_spending
+)
 
-st.title("📈 Exploratory Analysis")
+df = load_processed_data()
 
-df = pd.read_csv("data/processed/cleaned_data.csv")
+st.title("🔍 Exploratory Data Analysis")
 
-st.write("### Distributions")
-selected_col = st.selectbox("Select column", df.columns)
-plot_distribution(df, selected_col)
+st.subheader("1. Transaction Amount Distribution")
+col = st.selectbox("Choose variable", ["amt", "spending_std", "avg_transaction"])
+st.pyplot(plot_distribution(df, col))
+
+st.subheader("2. Spending Behavior by Age Group")
+st.pyplot(plot_spending_by_age(df))
+
+st.subheader("3. Spending by City Population Group")
+st.pyplot(plot_city_spending(df))
+
