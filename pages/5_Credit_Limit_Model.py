@@ -168,39 +168,80 @@ with tab2:
     - 현실적 소비 패턴은 단순 선형 규칙보다 훨씬 복잡하다는 것을 의미
     - 즉 **Model2는 현실 행동을 더 비슷하게 반영한 pseudo-label 구조**
     """)
-    
-with tab3:
-    st.header("📌 PCA & Feature Importance")
 
-    cols = ['total_spent','avg_transaction','transaction_count','spending_std']
-    X = df[cols].dropna()
+with tab3:
+    st.header("📌 PCA Analysis & Feature Importance")
+
+    st.subheader("🔹 PCA: Understanding Feature Variance")
+
+    pca_features = ['total_spent','avg_transaction','transaction_count','spending_std']
+    X = df[pca_features].dropna()
 
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
 
-    from sklearn.cluster import KMeans
+    # PCA
     from sklearn.decomposition import PCA
-
-    kmeans = KMeans(n_clusters=3, random_state=42)
-    labels = kmeans.fit_predict(X_scaled)
-
     pca = PCA(n_components=2)
     components = pca.fit_transform(X_scaled)
 
-    st.subheader("🎨 PCA Projection with KMeans Clusters")
+    # PCA Scatter (no clustering!)
     fig, ax = plt.subplots(figsize=(7,5))
-    scatter = ax.scatter(components[:,0], components[:,1], c=labels, cmap='viridis')
-    plt.colorbar(scatter)
+    ax.scatter(components[:,0], components[:,1], alpha=0.5)
+    ax.set_title("PCA Projection (PC1 vs PC2)")
+    ax.set_xlabel("PC1")
+    ax.set_ylabel("PC2")
     st.pyplot(fig)
 
-    st.subheader("📌 Cluster Group Statistics")
-    df_cluster = df.copy()
-    df_cluster['cluster'] = labels
-    st.dataframe(df_cluster.groupby('cluster')[cols].mean())
+    # PCA loadings
+    loadings = pd.DataFrame(
+        pca.components_,
+        columns=pca_features,
+        index=["PC1", "PC2"]
+    )
+
+    st.subheader("📌 PCA Loadings (Contribution of Each Feature)")
+    st.dataframe(loadings)
 
     st.markdown("""
-    ### Interpretation
-    - **Cluster 0:** Heavy spenders + frequent transactions  
-    - **Cluster 1:** Medium spending  
-    - **Cluster 2:** Low-volume but high-variance users  
+    **Interpretation**
+    - PC1 → 소비 규모(total_spent, transaction_count)에 강하게 반응  
+    - PC2 → 소비 변동성(spending_std)에 더 민감  
+    - 즉 PCA는 소비 패턴을 “규모” vs “안정성” 두 축으로 나누어 설명하는 구조를 보여줌.
     """)
+
+    # -------------------------------
+    # Feature Importance (Random Forest)
+    # -------------------------------
+    st.subheader("🔹 Feature Importance from Random Forest")
+
+    # Prepare normalized X as earlier ML section
+    features = ['total_spent','avg_transaction','transaction_count','spending_std',
+                'luxury','misc','necessity','wellbeing']
+
+    df_norm = df.copy()
+    for col in features:
+        r = df_norm[col].max() - df_norm[col].min()
+        df_norm[col + "_norm"] = (df_norm[col] - df_norm[col].min()) / (r if r != 0 else 1)
+
+    X_fi = df_norm[[c for c in df_norm.columns if c.endswith("_norm")]].dropna()
+    y_fi = df_norm['loan_approved']  # from earlier modeling
+
+    rf = RandomForestClassifier(n_estimators=300, class_weight="balanced", random_state=42)
+    rf.fit(X_fi, y_fi)
+
+    importances = pd.Series(rf.feature_importances_, index=X_fi.columns).sort_values()
+
+    fig, ax = plt.subplots(figsize=(8,6))
+    importances.plot(kind='barh', ax=ax, color='skyblue')
+    ax.set_title("Feature Importance (Random Forest)")
+    ax.set_xlabel("Importance")
+    st.pyplot(fig)
+
+    st.markdown("""
+    **Interpretation**
+    - 모델은 특히 **luxury_norm**, **avg_transaction_norm**, **wellbeing_norm** 등  
+      소비의 ‘패턴과 규모’를 반영하는 변수에 가장 크게 의존함.
+    - spending_std_norm 역시 위험 행동을 예측하는 중요한 변수로 나타남.
+    """)
+
