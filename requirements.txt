@@ -16,5 +16,11 @@ streamlit
 streamlit-option-menu
 
 # --- Optional Utilities ---
-pyarrow
-altair
+pyarrow      # for fast parquet read/write (optional but recommended)
+altair       # for interactive charts (optional)
+
+# --- Geospatial (only if you used latitude/longitude visualizations) ---
+folium
+geopandas    # optional: only if you need mapping
+
+pytest
