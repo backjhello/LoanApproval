@@ -219,6 +219,11 @@ with tab3:
     for grp, subset in df.groupby(seg_choice):
         if len(subset) < 30:
             continue
+
+        # 🔥 0/1 클래스 모두 존재해야 학습 가능
+        if subset['loan_approved'].nunique() < 2:
+            st.warning(f"Group '{grp}' skipped — only one class present.")
+            continue
         
         X_seg = X.loc[subset.index]
         y_seg = subset['loan_approved']
