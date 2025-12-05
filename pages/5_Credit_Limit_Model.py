@@ -9,6 +9,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, roc_auc_score
 
+from src.loader import load_customer_features
+
 st.title("📊 Customer Credit Risk — Tab 1: Overall Analysis")
 
 # ----------------------------------------------
