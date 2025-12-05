@@ -7,9 +7,10 @@ st.set_page_config(
     layout="wide"
 )
 
-# Load CSS
-with open("assets/styles.css") as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+# Load CSS safely on Windows (bypass cp949 decoding issues)
+with open("assets/styles.css", "rb") as f:
+    css = f.read().decode("utf-8", errors="ignore")
+    st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
 st.title("📈 Credit Transaction Analytics Dashboard")
 st.markdown("""

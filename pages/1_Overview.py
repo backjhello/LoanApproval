@@ -1,9 +1,11 @@
 import streamlit as st
-import pandas as pd
+from src.loader import load_processed_data
 
 st.title("📊 Dataset Overview")
 
-df = pd.read_csv("data/processed/cleaned_data.csv")
+# Use the central loader so filename and caching are consistent across pages
+df = load_processed_data()
+
 st.write("### Data Preview")
 st.dataframe(df.head())
 
