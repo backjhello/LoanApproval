@@ -24,6 +24,14 @@ st.dataframe(df.head())
 # ----------------------------------------------
 # 2. Create Pseudo Labels (loan_approved)
 # ----------------------------------------------
+
+from sklearn.preprocessing import MinMaxScaler
+
+scaler = MinMaxScaler()
+norm_cols = ['luxury', 'necessity', 'wellbeing', 'misc', 'spending_std']
+
+df[[c + '_norm' for c in norm_cols]] = scaler.fit_transform(df[norm_cols])
+
 st.subheader("🔧 Creating Pseudo Labels")
 
 df['risk_score'] = (
