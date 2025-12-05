@@ -26,3 +26,4 @@ altair    # for interactive charts (optional)
 # --- Geospatial (only if you used latitude/longitude visualizations) ---
 folium
 geopandas   # (optional: only if you need mapping)
+pytest
