@@ -1,8 +1,8 @@
 import streamlit as st
-from src.loader import load_processed_data
+from src.loader import load_df       # ← FIXED
 from src.eda import anova_by_group
 
-df = load_processed_data()
+df = load_df()                       # ← FIXED
 
 st.title("📈 Statistical Significance Tests")
 

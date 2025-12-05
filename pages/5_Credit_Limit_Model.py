@@ -1,5 +1,5 @@
 import streamlit as st
-from src.loader import load_processed_data
+from src.loader import load_df
 from src.preprocessing import feature_engineering
 from src.model import load_model, save_model, train_demo_model, evaluate_model, get_feature_importances
 from src.viz import plot_feature_importance
@@ -11,7 +11,7 @@ st.title("🤖 Credit Limit Modeling (Demo)")
 st.markdown("This page demonstrates loading a saved model or training a small demo model from the processed data."
             " For safety, demo training uses a small RandomForest so it finishes quickly in the UI.")
 
-df = load_processed_data()
+df = load_df()
 df, customers = feature_engineering(df)
 
 # Determine candidate feature and target columns

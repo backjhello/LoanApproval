@@ -1,12 +1,12 @@
 import streamlit as st
-from src.loader import load_processed_data
+from src.loader import load_df
 from src.cluster import run_clustering
 import seaborn as sns
 import matplotlib.pyplot as plt
 
 st.title("🧭 Customer Clustering")
 
-df = load_processed_data()
+df = load_df()
 
 st.markdown("This page shows a simple KMeans-based clustering of customers using a few engineered features.")
 

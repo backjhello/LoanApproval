@@ -7,22 +7,14 @@ matplotlib
 seaborn
 plotly
 
-# --- Machine Learning / Stats ---
-scikit-learn
-scipy
-statsmodels
-
-# --- Clustering / Dimensionality Reduction (optional but used in your notebook) ---
-umap-learn
+# --- Machine Learning (Python 3.13 compatible) ---
+scikit-learn==1.5.0
+scipy==1.14.1
 
 # --- Streamlit Dashboard ---
 streamlit
 streamlit-option-menu
 
-# --- Utilities ---
-pyarrow     # for fast parquet read/write (optional but recommended)
-altair    # for interactive charts (optional)
-
-# --- Geospatial (only if you used latitude/longitude visualizations) ---
-folium
-geopandas   # (optional: only if you need mapping)
+# --- Optional Utilities ---
+pyarrow
+altair

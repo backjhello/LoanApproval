@@ -1,5 +1,5 @@
 import streamlit as st
-from src.loader import load_processed_data
+from src.loader import load_df 
 from src.eda import describe_df, missing_summary
 from src.viz import (
     plot_distribution,
@@ -9,7 +9,7 @@ from src.viz import (
     plot_correlation_heatmap,
 )
 
-df = load_processed_data()
+df = load_df()   # ← FIXED HERE
 
 st.title("🔍 Exploratory Data Analysis")
 
@@ -36,4 +36,3 @@ if 'age_group' in df.columns:
 if 'city_group' in df.columns:
     st.subheader("Spending by city population group")
     st.pyplot(plot_city_spending(df))
-
