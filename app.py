@@ -7,10 +7,12 @@ st.set_page_config(
     layout="wide"
 )
 
+# Load CSS safely
 # Load CSS safely on Windows (bypass cp949 decoding issues)
 with open("assets/styles.css", "rb") as f:
     css = f.read().decode("utf-8", errors="ignore")
     st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
+
 
 st.title("📈 Credit Transaction Analytics Dashboard")
 st.markdown("""
@@ -22,4 +24,3 @@ from the FA25 STAT team project.
 
 st.sidebar.header("Navigation")
 st.sidebar.markdown("Use the pages in the sidebar to explore the analysis.")
-
