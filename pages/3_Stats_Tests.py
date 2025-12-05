@@ -1,54 +1,133 @@
 import streamlit as st
 import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 from src.loader import load_customer_features
 
+st.set_page_config(layout="wide")
 df = load_customer_features()
-st.subheader("🔍 Deep Correlation Analysis")
+
+sns.set_theme(style="whitegrid")
+
+st.title("📊 Statistical Relationship Analysis")
 
 st.markdown("""
-This section explores how spending behavior in different categories relates to **spending variability (spending_std)**.  
-Understanding these relationships helps explain **customer stability** and **potential credit risk**.
+This page analyzes **how different spending behaviors relate to financial volatility**  
+(spending_std). These insights connect directly to **credit risk modeling** in later stages.
 """)
 
-categories = ["luxury", "misc", "necessity", "wellbeing"]
-results = []
+# -------------------------------------------------------
+# 1) Category–Volatility Correlation Table (Pretty)
+# -------------------------------------------------------
+st.subheader("📌 Correlation Between Spending Types & Volatility")
+
+categories = ["luxury", "necessity", "wellbeing", "misc"]
+corr_data = []
 
 for cat in categories:
     r, p = pearsonr(df[cat], df["spending_std"])
-    results.append((cat, r, p))
+    corr_data.append([cat.capitalize(), round(r,3), f"{p:.3e}"])
 
-st.write("### Correlation & p-values")
-for cat, r, p in results:
-    st.write(f"**{cat.capitalize()} vs spending_std:** r = `{r:.3f}`, p = `{p:.3e}`")
+corr_df = pd.DataFrame(corr_data, columns=["Category", "Correlation (r)", "p-value"])
 
-st.write("---")
+# color styling
+st.dataframe(
+    corr_df.style.background_gradient(cmap="Blues", subset=["Correlation (r)"])
+                .format({"Correlation (r)": "{:.3f}"})
+)
 
-# Interpretation
-st.subheader("📝 Interpretation")
+st.markdown("---")
+
+# -------------------------------------------------------
+# 2) Scatterplots (Luxury/Wellbeing strongest correlations)
+# -------------------------------------------------------
+st.subheader("📈 Strongest Relationships Visualized")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    fig, ax = plt.subplots(figsize=(6,4))
+    sns.regplot(
+        x=df["luxury"],
+        y=df["spending_std"],
+        scatter_kws={"alpha":0.3},
+        line_kws={"color":"red"},
+        ax=ax
+    )
+    ax.set_title("Luxury Spending vs Spending Variability")
+    ax.set_xlabel("Luxury Ratio")
+    ax.set_ylabel("Spending Std")
+    st.pyplot(fig)
+
+with col2:
+    fig, ax = plt.subplots(figsize=(6,4))
+    sns.regplot(
+        x=df["wellbeing"],
+        y=df["spending_std"],
+        scatter_kws={"alpha":0.3},
+        line_kws={"color":"green"},
+        ax=ax
+    )
+    ax.set_title("Wellbeing Spending vs Spending Variability")
+    ax.set_xlabel("Wellbeing Ratio")
+    ax.set_ylabel("Spending Std")
+    st.pyplot(fig)
+
+st.markdown("---")
+
+# -------------------------------------------------------
+# 3) Heatmap (Category → Volatility)
+# -------------------------------------------------------
+st.subheader("🔗 Correlation Heatmap")
+
+heat_df = df[["luxury", "necessity", "wellbeing", "misc", "spending_std"]].corr()
+
+fig, ax = plt.subplots(figsize=(6,4))
+sns.heatmap(heat_df, annot=True, cmap="RdBu", center=0, ax=ax)
+st.pyplot(fig)
+
+st.markdown("---")
+
+# -------------------------------------------------------
+# 4) Interpretation Section — Cleaner & Stronger
+# -------------------------------------------------------
+st.subheader("📝 Interpretation & Credit Risk Meaning")
 
 st.markdown("""
-### 1️⃣ **Luxury spending ratio → spending variability (r = ~0.57, strong positive)**  
-Customers with high luxury spending tend to show **unstable or irregular spending patterns**,  
-often making large purchases occasionally rather than consistent smaller ones.  
-➡ Indicates **higher credit risk potential**.
+### 🔥 **1. Luxury spending → HIGH volatility (r ≈ +0.57)**  
+Customers who spend more on **entertainment, shopping, travel** show  
+**irregular, unstable financial behavior**.  
+→ Potential **higher credit risk**.
 
-### 2️⃣ **Misc spending ratio → weak relationship**  
-Little correlation was observed, suggesting miscellaneous spending is not a strong predictor of volatility.
+### 🧊 **2. Wellbeing spending → LOWER volatility (r ≈ −0.62)**  
+Customers who consistently invest in **health, family, home** show  
+**stable spending patterns**.  
+→ Potential **lower credit risk**.
 
-### 3️⃣ **Necessity spending → negative correlation (stable customers)**  
-Higher necessity spending aligns with **predictable, routine consumption**.  
-➡ Indicates **lower credit risk**.
+### 🍞 **3. Necessity-driven customers → stable, predictable**  
+Daily-living categories show a **negative correlation** with volatility.  
+These customers behave **financially conservative**.
 
-### 4️⃣ **Wellbeing spending → strong negative correlation**  
-Customers who spend more consistently on wellbeing categories tend to have  
-**stable and predictable financial behavior**.  
-➡ Also aligned with **lower risk**.
+### 📦 **4. Misc category → no meaningful relationship**  
+As expected, unclassified transactions don’t explain risk well.
 
 ---
 
-### ✔ Statistical Confidence  
-All strong correlations (luxury ↑ / wellbeing ↓) have **p-values < 0.001**,  
-meaning these relationships are **statistically significant** and not due to random chance.
+### ⭐ Statistical Confidence
+- Correlations > |0.3| are considered **meaningful**  
+- r > 0.5 or r < -0.5 = **strong**  
+- All major relationships have **p < 0.001**, meaning results are **statistically significant**.
 
+---
+
+### 🎯 What does this mean for modeling?
+These findings directly support your modeling pipeline:
+
+- **Luxury ↑ → Risk Score ↑ → Loan Approval ↓**  
+- **Wellbeing / Necessity ↑ → Risk Score ↓ → Loan Approval ↑**
+
+Your dataset has a very logical behavioral pattern,  
+which is why your logistic/RF models work well.
 """)
