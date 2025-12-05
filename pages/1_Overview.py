@@ -158,6 +158,42 @@ with tab3:
 
     st.caption("Average proportion of spending across all customers.")
 
+    st.markdown("""
+    ### 🗂 Category Mapping  
+    Here is how the original **14 spending categories** were grouped into the four spending types used in this project:
+
+    ---
+
+    #### 🎩 **Luxury / Leisure**
+    *entertainment, shopping_net, shopping_pos, travel*
+
+    These represent non-essential, lifestyle-oriented purchases such as fashion, fun, and travel.
+
+    ---
+
+    #### 🛒 **Necessity**
+    *grocery_pos, grocery_net, gas_transport, personal_care*
+
+    Essential spending categories covering daily life needs.
+
+    ---
+
+    #### 🌿 **Wellbeing**
+    *health_fitness, kids_pets, home*
+
+    Health, family, and home-related categories that contribute to long-term wellbeing.
+
+    ---
+
+    #### 📦 **Miscellaneous**
+    *misc_pos, misc_net*
+
+    Irregular or unclassified transactions that do not fit into any other category.
+
+    ---
+
+    """)
+
 
 # ---------------------------------------------------------
 # 4. DISTRIBUTIONS TAB
