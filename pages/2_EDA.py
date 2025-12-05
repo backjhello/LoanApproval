@@ -1,38 +1,23 @@
 import streamlit as st
-from src.loader import load_df 
-from src.eda import describe_df, missing_summary
-from src.viz import (
-    plot_distribution,
-    plot_spending_by_age,
-    plot_city_spending,
-    plot_missingness,
-    plot_correlation_heatmap,
-)
+import pandas as pd
+import matplotlib.pyplot as plt
+from src.loader import load_customer_features
 
-df = load_df()   # ← FIXED HERE
+st.title("📊 Exploratory Data Analysis")
+df = load_customer_features()
 
-st.title("🔍 Exploratory Data Analysis")
+# 나이대 그룹 생성
+bins = [0, 25, 35, 45, 55, 65, 120]
+labels = ['<25', '25-34', '35-44', '45-54', '55-64', '65+']
+df['age_group'] = pd.cut(df['avg_age'], bins=bins, labels=labels, right=False)
 
-st.subheader("Dataset summary")
-st.write(describe_df(df))
+# 평균 소비 비율 계산
+age_spend = df.groupby('age_group')[['luxury','necessity','wellbeing','misc']].mean().reset_index()
 
-st.subheader("Missing values")
-st.pyplot(plot_missingness(df))
+st.subheader("Age Group Spending Ratio Table")
+st.dataframe(age_spend)
 
-st.subheader("Correlation matrix (numeric)")
-num_cols = list(df.select_dtypes(include=['number']).columns)
-sel_cols = st.multiselect("Columns to include (empty = all numeric)", options=num_cols, default=None)
-st.pyplot(plot_correlation_heatmap(df, cols=sel_cols))
-
-st.subheader("Distribution explorer")
-col = st.selectbox("Choose variable", num_cols, index=0 if num_cols else None)
-if col:
-    st.pyplot(plot_distribution(df, col))
-
-if 'age_group' in df.columns:
-    st.subheader("Spending behavior by age_group")
-    st.pyplot(plot_spending_by_age(df))
-
-if 'city_group' in df.columns:
-    st.subheader("Spending by city population group")
-    st.pyplot(plot_city_spending(df))
+fig, ax = plt.subplots(figsize=(7,5))
+age_spend.set_index('age_group').plot(kind='bar', stacked=True, ax=ax)
+ax.set_title("Average Spending Ratio by Age Group")
+st.pyplot(fig)

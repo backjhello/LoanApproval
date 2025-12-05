@@ -1,22 +1,25 @@
 import streamlit as st
-from src.loader import load_df       # ← FIXED
-from src.eda import anova_by_group
+from scipy.stats import f_oneway
+import pandas as pd
+from src.loader import load_customer_features
 
-df = load_df()                       # ← FIXED
+st.title("📊 Statistical Tests")
+df = load_customer_features()
 
-st.title("📈 Statistical Significance Tests")
+groups = df['age_group'].unique()
 
-value = st.selectbox("Value to test", ["total_spent", "avg_transaction"])
-group = st.selectbox("Group variable", ["age_group", "city_group"])
+value = st.selectbox("Variable", ['total_spent','avg_transaction'])
+st.write("Comparing across age groups...")
 
-f, p = anova_by_group(df, group, value)
+data = [df[df['age_group']==g][value] for g in groups]
 
-st.write(f"### ANOVA Results for {value} across {group}")
+f, p = f_oneway(*data)
+
 st.write(f"**F-statistic:** {f:.4f}")
-st.write(f"**p-value:** {p:.3e}")
+st.write(f"**p-value:** {p:.4f}")
 
 if p < 0.05:
-    st.success("There is a statistically significant difference across groups.")
+    st.success("Significant differences exist between age groups.")
 else:
-    st.info("No statistically significant difference found.")
+    st.info("No significant difference detected.")
 
