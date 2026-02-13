@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import os
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -10,17 +9,12 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import roc_auc_score, classification_report
+from src.loader import load_customer_features
 
 
 # ======================================
 # 0) LOAD DATA
 # ======================================
-@st.cache_data
-def load_customer_features():
-    base = os.path.dirname(os.path.dirname(__file__))  
-    path = os.path.join(base, "data", "processed", "customer_features.csv")
-    return pd.read_csv(path)
-
 df = load_customer_features()
 
 st.title("📊 Credit Risk Modeling Dashboard")

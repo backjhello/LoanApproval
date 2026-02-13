@@ -1,0 +1,13 @@
+# OS files
+.DS_Store
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Test/cache artifacts
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/

@@ -1,26 +1,7 @@
-# --- Core ---
-pandas
-numpy
-
-# --- Visualization ---
-matplotlib
-seaborn
-plotly
-
-# --- Machine Learning (Python 3.13 compatible) ---
-scikit-learn==1.5.0
-scipy==1.14.1
-
-# --- Streamlit Dashboard ---
-streamlit
-streamlit-option-menu
-
-# --- Optional Utilities ---
-pyarrow      # for fast parquet read/write (optional but recommended)
-altair       # for interactive charts (optional)
-
-# --- Geospatial (only if you used latitude/longitude visualizations) ---
-folium
-geopandas    # optional: only if you need mapping
-
-pytest
+streamlit>=1.30,<2
+pandas>=2.0,<3
+numpy>=1.24,<3
+matplotlib>=3.7,<4
+seaborn>=0.13,<1
+scikit-learn>=1.4,<2
+scipy>=1.10,<2
